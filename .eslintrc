@@ -28,6 +28,7 @@
             ".ts"
         ]
     },
+    "allow": ["_id"],
     "rules": {
         "import/extensions": [
             "error",
