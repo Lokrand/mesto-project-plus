@@ -1,4 +1,4 @@
-import IUser from "./user";
+import IUser from './user';
 
 export default interface ICard {
   name: string;
@@ -6,4 +6,5 @@ export default interface ICard {
   owner: IUser;
   likes: IUser[];
   createdAt: Date;
+// eslint-disable-next-line semi
 }

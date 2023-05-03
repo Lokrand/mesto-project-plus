@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import IUser from "types/user";
+import mongoose from 'mongoose';
+import IUser from '../types/user';
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -20,4 +20,4 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<IUser>("user", UserSchema);
+export default mongoose.model<IUser>('user', UserSchema);

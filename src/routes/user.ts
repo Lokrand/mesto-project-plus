@@ -1,19 +1,19 @@
+import { Router } from 'express';
+import { Joi, celebrate } from 'celebrate';
 import {
   createUser,
   getSingleUser,
   getUsers,
   updateMe,
   updateMyAvatar,
-} from "../controllers/user";
-import { Router } from "express";
-import { Joi, celebrate } from "celebrate";
+} from '../controllers/user';
 
 const router = Router();
 
-router.get("/", getUsers);
-router.get("/:userId", getSingleUser);
+router.get('/', getUsers);
+router.get('/:userId', getSingleUser);
 router.post(
-  "/",
+  '/',
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
@@ -21,26 +21,26 @@ router.post(
       avatar: Joi.string().required(),
     }),
   }),
-  createUser
+  createUser,
 );
 router.patch(
-  "/me",
+  '/me',
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(200),
     }),
   }),
-  updateMe
+  updateMe,
 );
 router.patch(
-  "/me/avatar",
+  '/me/avatar',
   celebrate({
     body: Joi.object().keys({
       avatar: Joi.string().required(),
     }),
   }),
-  updateMyAvatar
+  updateMyAvatar,
 );
 
 export default router;

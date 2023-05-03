@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import ICard from "types/card";
+import mongoose from 'mongoose';
+import ICard from '../types/card';
 
 const CardSchema = new mongoose.Schema({
   name: {
@@ -26,4 +26,4 @@ const CardSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<ICard>("card", CardSchema);
+export default mongoose.model<ICard>('card', CardSchema);
