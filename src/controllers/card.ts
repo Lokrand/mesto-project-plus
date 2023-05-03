@@ -12,7 +12,7 @@ export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена.');
       }
-      res.status(201).send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch(next);
 };
@@ -35,7 +35,7 @@ export const likeCard = (req: Request, res: Response, next: NextFunction) => Car
     if (!card) {
       throw new NotFoundError('Передан несуществующий _id карточки.');
     }
-    res.status(201).send({ data: card });
+    res.status(200).send({ data: card });
   })
   .catch(next);
 
@@ -50,7 +50,7 @@ export const dislikeCard = (req: Request, res: Response, next: NextFunction) => 
       if (!card) {
         throw new NotFoundError('Передан несуществующий _id карточки.');
       }
-      res.status(201).send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch(next);
 };

@@ -5,8 +5,8 @@ import BadRequest from '../errors/bad-request';
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => User.find({})
   .then((users) => {
-    if (!users) throw new BadRequest('Пользователи не найдены');
-    else res.status(201).send({ data: users });
+    if (users.length === 0) throw new BadRequest('Пользователи не найдены');
+    else res.status(200).send({ data: users });
   })
   .catch(next);
 
@@ -16,10 +16,10 @@ export const getSingleUser = (
   next: NextFunction,
 ) => User.find({ _id: req.params.userId })
   .then((user) => {
-    if (!user) {
+    if (user.length !== 1) {
       throw new NotFoundError('Пользователь по указанному _id не найден.');
     }
-    res.status(201).send({ data: user });
+    res.status(200).send({ data: user[0] });
   })
   .catch(next);
 
@@ -33,23 +33,22 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const updateMe = (req: Request, res: Response, next: NextFunction) => {
-  const { name, about, avatar } = req.body;
+  const { name, about } = req.body;
 
   return User.findByIdAndUpdate(
     // @ts-expect-error
     req.user._id,
-    { name, about, avatar },
+    { name, about },
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден.');
       }
-      res.status(201).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch(next);
 };
@@ -66,7 +65,7 @@ export const updateMyAvatar = (
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден.');
       }
-      res.status(201).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch(next);
 };
