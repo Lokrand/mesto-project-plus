@@ -26,7 +26,7 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const likeCard = (req: Request, res: Response, next: NextFunction) => Card.findByIdAndUpdate(
-  req.params.cardId,
+  req.params.ObjectId,
   // @ts-expect-error
   { $addToSet: { likes: req.user._id } },
   { new: true },
@@ -41,7 +41,7 @@ export const likeCard = (req: Request, res: Response, next: NextFunction) => Car
 
 export const dislikeCard = (req: Request, res: Response, next: NextFunction) => {
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    req.params.ObjectId,
     // @ts-expect-error
     { $pull: { likes: req.user._id } },
     { new: true },

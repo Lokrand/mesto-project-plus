@@ -1,25 +1,23 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { errors } from 'celebrate';
 import NotFoundError from './errors/not-found-err';
 import routerUser from './routes/user';
 import routerCard from './routes/card';
 
 require('dotenv').config();
-// const { errors } = require('celebrate');
+const { errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
-// Ссылку на сервер беру с сайта mongodb
-// "mongodb+srv://Login:Password@cluster0.6peharq.mongodb.net/test"
-
-const url = process.env.MONGO_URL ? process.env.MONGO_URL : 'mongodb://localhost:27017/mestodb';
+const url = process.env.MONGO_URL
+  ? process.env.MONGO_URL
+  : 'mongodb://127.0.0.1:27017/mestodb';
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(url);
+mongoose.connect(url, {});
 
 // Middleware - для добавления тестового id
 app.use((req: Request, res: Response, next) => {

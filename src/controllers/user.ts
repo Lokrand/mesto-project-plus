@@ -14,7 +14,7 @@ export const getSingleUser = (
   req: Request,
   res: Response,
   next: NextFunction,
-) => User.find({ _id: req.params.userId })
+) => User.find({ _id: req.params.ObjectId })
   .then((user) => {
     if (user.length !== 1) {
       throw new NotFoundError('Пользователь по указанному _id не найден.');
