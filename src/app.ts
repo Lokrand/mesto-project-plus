@@ -13,7 +13,7 @@ const { PORT = 3000 } = process.env;
 // Ссылку на сервер беру с сайта mongodb
 // "mongodb+srv://Login:Password@cluster0.6peharq.mongodb.net/test"
 
-const url = process.env.MONGO_URL ? process.env.MONGO_URL : '';
+const url = process.env.MONGO_URL ? process.env.MONGO_URL : 'mongodb://localhost:27017/mestodb';
 
 const app = express();
 app.use(express.json());
