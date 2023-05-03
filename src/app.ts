@@ -1,10 +1,12 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import { errors } from 'celebrate';
+import NotFoundError from './errors/not-found-err';
 import routerUser from './routes/user';
 import routerCard from './routes/card';
 
 require('dotenv').config();
-const { errors } = require('celebrate');
+// const { errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
@@ -31,6 +33,10 @@ app.use((req: Request, res: Response, next) => {
 // роуты
 app.use('/users', routerUser);
 app.use('/cards', routerCard);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(new NotFoundError('Страница не найдена'));
+});
 
 // обработчики ошибок
 app.use(errors());
