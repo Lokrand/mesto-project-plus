@@ -7,7 +7,7 @@ export const getCards = (req: Request, res: Response, next: NextFunction) => Car
   .catch(next);
 
 export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findByIdAndRemove(req.params.ObjectId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена.');

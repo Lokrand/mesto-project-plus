@@ -11,7 +11,15 @@ import {
 const router = Router();
 
 router.get('/', getUsers);
-router.get('/:ObjectId', getSingleUser);
+router.get(
+  '/:userId',
+  celebrate({
+    params: Joi.object().keys({
+      userId: Joi.string().hex().length(24),
+    }),
+  }),
+  getSingleUser,
+);
 router.post(
   '/',
   celebrate({
@@ -28,9 +36,6 @@ router.patch(
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
-      // Извините, там рассинхрон в задании и ТЗ, и я 200 по инструкции ввёл.
-      // В инструкции написано было:
-      // about — информация о пользователе, строка от 2 до 200 символов, обязательное поле;
       about: Joi.string().required().min(2).max(30),
     }),
   }),
@@ -40,7 +45,6 @@ router.patch(
   '/me/avatar',
   celebrate({
     body: Joi.object().keys({
-      // тут же указан required для обязательного поля
       avatar: Joi.string().required(),
     }),
   }),

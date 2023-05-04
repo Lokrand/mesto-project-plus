@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import User from '../models/user';
 import NotFoundError from '../errors/not-found-err';
-import BadRequest from '../errors/bad-request';
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => User.find({})
   .then((users) => {
-    if (users.length === 0) throw new BadRequest('Пользователи не найдены');
+    if (users.length === 0) throw new NotFoundError('Пользователи не найдены');
     else res.status(200).send({ data: users });
   })
   .catch(next);
@@ -14,12 +13,12 @@ export const getSingleUser = (
   req: Request,
   res: Response,
   next: NextFunction,
-) => User.find({ _id: req.params.ObjectId })
+) => User.findById({ _id: req.params.ObjectId })
   .then((user) => {
-    if (user.length !== 1) {
+    if (!user) {
       throw new NotFoundError('Пользователь по указанному _id не найден.');
     }
-    res.status(200).send({ data: user[0] });
+    res.status(200).send({ data: user });
   })
   .catch(next);
 
