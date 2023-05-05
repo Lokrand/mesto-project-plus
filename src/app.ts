@@ -39,7 +39,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // обработчики ошибок
 app.use(errors());
 
-app.use((err: any, req: Request, res: Response) => {
+// eslint-disable-next-line no-unused-vars
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const { statusCode = 500, message } = err;
 
   res.status(statusCode).send({
