@@ -28,7 +28,16 @@ mongoose.connect(url, {});
 app.use(requestLogger);
 
 // Роуты для авторизации
-app.post('/signin', login);
+app.post(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required(),
+      password: Joi.string().required(),
+    }),
+  }),
+  login,
+);
 app.post(
   '/signup',
   celebrate({
@@ -45,7 +54,7 @@ app.post(
 
 // Основные роуты для базы данных
 // @ts-expect-error
-app.use(auth);
+app.use('/', auth);
 
 app.use('/users', routerUser);
 app.use('/cards', routerCard);
@@ -66,7 +75,8 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const { statusCode = 500, message } = err;
 
   res.status(statusCode).send({
-    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+    // message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+    message: statusCode === 500 ? err : message,
   });
 });
 

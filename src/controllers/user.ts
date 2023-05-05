@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcryptjs';
-import BadRequest from 'errors/bad-request';
+import BadRequest from '../errors/bad-request';
 import AlreadyExist from '../errors/already-exist';
 import WrongData from '../errors/wrong-data';
 import User from '../models/user';
@@ -36,7 +36,11 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
   return bcrypt
     .hash(password, 10)
     .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
     }))
     .then((user) => {
       res.status(201).send({ data: user });
@@ -88,26 +92,38 @@ export const updateMyAvatar = (
 
 export const login = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
-  // @ts-ignore
-  return User.findUserByCredentials(email, password).select('+password')
-    .then((user: any) => {
+
+  return User.findOne({ email })
+    .select('+password')
+    .then((user) => {
       if (!user) {
         throw new WrongData('Передан неверный логин или пароль');
       }
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+      // @ts-expect-error
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        throw new WrongData('Передан неверный логин или пароль');
+      }
+
+      // @ts-expect-error
+      const token = jwt.sign({ _id: matched._id }, 'super-secret-key', {
         expiresIn: '7d',
       });
-
       res.send({ token });
     })
     .catch(next);
 };
 
-export const getMe = (req: Request, res: Response, next: NextFunction) =>
+export const getMe = (req: Request, res: Response, next: NextFunction) => {
+  console.log(req);
   // @ts-expect-error
   // eslint-disable-next-line implicit-arrow-linebreak
-  User.findById({ _id: req.user._id })
+  return User.findById({ _id: req.user.userId })
     .then((user) => {
       if (!user) throw new BadRequest('Пользователь не найден');
       res.status(200).send({ data: user });
-    }).catch(next);
+    })
+    .catch(next);
+};
