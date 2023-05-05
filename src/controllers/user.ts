@@ -13,7 +13,7 @@ export const getSingleUser = (
   req: Request,
   res: Response,
   next: NextFunction,
-) => User.findById({ _id: req.params.ObjectId })
+) => User.findById({ _id: req.params.userId })
   .then((user) => {
     if (!user) {
       throw new NotFoundError('Пользователь по указанному _id не найден.');

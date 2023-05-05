@@ -7,7 +7,7 @@ export const getCards = (req: Request, res: Response, next: NextFunction) => Car
   .catch(next);
 
 export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
-  Card.findByIdAndRemove(req.params.ObjectId)
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена.');
@@ -26,7 +26,7 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const likeCard = (req: Request, res: Response, next: NextFunction) => Card.findByIdAndUpdate(
-  req.params.ObjectId,
+  req.params.cardId,
   // @ts-expect-error
   { $addToSet: { likes: req.user._id } },
   { new: true },
@@ -41,7 +41,7 @@ export const likeCard = (req: Request, res: Response, next: NextFunction) => Car
 
 export const dislikeCard = (req: Request, res: Response, next: NextFunction) => {
   Card.findByIdAndUpdate(
-    req.params.ObjectId,
+    req.params.cardId,
     // @ts-expect-error
     { $pull: { likes: req.user._id } },
     { new: true },
