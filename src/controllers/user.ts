@@ -3,6 +3,8 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcryptjs';
+import BadRequest from 'errors/bad-request';
+import AlreadyExist from '../errors/already-exist';
 import WrongData from '../errors/wrong-data';
 import User from '../models/user';
 import NotFoundError from '../errors/not-found-err';
@@ -39,7 +41,11 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     .then((user) => {
       res.status(201).send({ data: user });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(new AlreadyExist('Пользователь уже существует'));
+      }
+    });
 };
 
 export const updateMe = (req: Request, res: Response, next: NextFunction) => {
@@ -83,7 +89,7 @@ export const updateMyAvatar = (
 export const login = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   // @ts-ignore
-  return User.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password).select('+password')
     .then((user: any) => {
       if (!user) {
         throw new WrongData('Передан неверный логин или пароль');
@@ -97,6 +103,11 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
     .catch(next);
 };
 
-export const getMe = (req: Request, res: Response, next: NextFunction) => {
-
-};
+export const getMe = (req: Request, res: Response, next: NextFunction) =>
+  // @ts-expect-error
+  // eslint-disable-next-line implicit-arrow-linebreak
+  User.findById({ _id: req.user._id })
+    .then((user) => {
+      if (!user) throw new BadRequest('Пользователь не найден');
+      res.status(200).send({ data: user });
+    }).catch(next);

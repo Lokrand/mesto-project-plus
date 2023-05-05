@@ -28,6 +28,7 @@ const UserSchema = new mongoose.Schema({
       'Введён не корректный адрес электронной почты',
     ],
     required: true,
+    unique: true,
   },
   password: {
     type: String,

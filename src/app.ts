@@ -36,6 +36,8 @@ app.post(
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
       avatar: Joi.string(),
+      email: Joi.string().required(),
+      password: Joi.string().required(),
     }),
   }),
   createUser,
@@ -43,7 +45,7 @@ app.post(
 
 // Основные роуты для базы данных
 // @ts-expect-error
-app.use('/', auth);
+app.use(auth);
 
 app.use('/users', routerUser);
 app.use('/cards', routerCard);
@@ -56,7 +58,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Логгер ошибок
 app.use(errorLogger);
 
-// обработчики ошибок
+// Обработчики ошибок
 app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
