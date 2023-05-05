@@ -1,11 +1,17 @@
 import { NextFunction } from 'express';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import jwt from 'jsonwebtoken';
+// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unresolved
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { IReq } from '../types/req';
 import WrongData from '../errors/wrong-data';
 
+interface SessionRequest extends Request {
+  user?: string | JwtPayload;
+}
+
+const extractBearerToken = (header: string) => header.replace('Bearer ', '');
+
 // eslint-disable-next-line consistent-return
-export default (req: Request, res: Response, next: NextFunction) => {
+export default (req: SessionRequest, res: Response, next: NextFunction) => {
   // @ts-expect-error
   const reqWithId = req as IReq;
   // @ts-expect-error
@@ -20,7 +26,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
     );
   }
 
-  const token = authorization.replace('Bearer ', '');
+  const token = extractBearerToken(authorization);
   let payload: jwt.JwtPayload;
 
   try {
@@ -31,8 +37,8 @@ export default (req: Request, res: Response, next: NextFunction) => {
   } catch (err) {
     return next(new WrongData('Необходима авторизация'));
   }
-  // @ts-expect-error
-  req.user = payload;
 
-  next();
+  // req.user = payload;
+
+  next(reqWithId);
 };

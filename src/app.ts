@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { Joi, celebrate } from 'celebrate';
 import auth from './middlewares/auth';
-import { createUser, login } from './controllers/user';
+import { createUser, getMe, login } from './controllers/user';
 import NotFoundError from './errors/not-found-err';
 import routerUser from './routes/user';
 import routerCard from './routes/card';
@@ -54,7 +54,7 @@ app.post(
 
 // Основные роуты для базы данных
 // @ts-expect-error
-app.use('/', auth);
+app.use(auth);
 
 app.use('/users', routerUser);
 app.use('/cards', routerCard);

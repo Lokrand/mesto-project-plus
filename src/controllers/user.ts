@@ -1,14 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcryptjs';
+// import { IReq } from '../types/req';
 import { IReq } from '../types/req';
 import BadRequest from '../errors/bad-request';
 import AlreadyExist from '../errors/already-exist';
 import WrongData from '../errors/wrong-data';
 import User from '../models/user';
 import NotFoundError from '../errors/not-found-err';
+
+interface SessionRequest extends Request {
+  user?: string | JwtPayload;
+}
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => User.find({})
   .then((users) => {
@@ -94,31 +99,44 @@ export const updateMyAvatar = (
 export const login = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
-  return User.findOne({ email })
-    .select('+password')
-    .then((user) => {
+  return User.findUserByCredentials(email, password)
+    .then((user: any) => {
       if (!user) {
         throw new WrongData('Передан неверный логин или пароль');
       }
-      // @ts-expect-error
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        throw new WrongData('Передан неверный логин или пароль');
-      }
-
-      // @ts-expect-error
-      const token = jwt.sign({ _id: matched._id }, 'super-secret-key', {
+      const token = jwt.sign({ _id: user._id }, 'super-secret-key', {
         expiresIn: '7d',
       });
       res.send({ token });
     })
     .catch(next);
 };
+// const { email, password } = req.body;
 
-export const getMe = (req: Request, res: Response, next: NextFunction) => {
+// return User.findOne({ email })
+//   .select('+password')
+//   .then((user) => {
+//     if (!user) {
+//       throw new WrongData('Передан неверный логин или пароль');
+//     }
+//     // @ts-expect-error
+//     return bcrypt.compare(password, user.password);
+//   })
+//   .then((matched) => {
+//     if (!matched) {
+//       throw new WrongData('Передан неверный логин или пароль');
+//     }
+
+//     const token = jwt.sign({ _id: matched._id }, 'super-secret-key', {
+//       expiresIn: '7d',
+//     });
+//     res.send({ token });
+//   })
+//   .catch(next);
+
+export const getMe = (req: SessionRequest, res: Response, next: NextFunction) => {
   const reqWithId = req as IReq;
+  // eslint-disable-next-line implicit-arrow-linebreak
   // eslint-disable-next-line implicit-arrow-linebreak
   return User.findById({ _id: reqWithId.user._id })
     .then((user) => {
