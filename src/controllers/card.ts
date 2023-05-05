@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { IReq } from '../types/req';
 import Card from '../models/card';
 import NotFoundError from '../errors/not-found-err';
 
@@ -17,10 +18,10 @@ export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
     .catch(next);
 };
 
-export const createCard = (req: Request, res: Response, next: NextFunction) => {
+export const createCard = async (req: Request, res: Response, next: NextFunction) => {
+  const reqWithId = req as IReq;
   const { name, link } = req.body;
-  // @ts-expect-error
-  return Card.create({ owner: req.user._id, name, link })
+  await Card.create({ owner: reqWithId.user._id, name, link })
     .then((card) => res.status(201).send({ data: card }))
     .catch(next);
 };

@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcryptjs';
+import { IReq } from '../types/req';
 import BadRequest from '../errors/bad-request';
 import AlreadyExist from '../errors/already-exist';
 import WrongData from '../errors/wrong-data';
@@ -117,10 +118,9 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const getMe = (req: Request, res: Response, next: NextFunction) => {
-  console.log(req);
-  // @ts-expect-error
+  const reqWithId = req as IReq;
   // eslint-disable-next-line implicit-arrow-linebreak
-  return User.findById({ _id: req.user.userId })
+  return User.findById({ _id: reqWithId.user._id })
     .then((user) => {
       if (!user) throw new BadRequest('Пользователь не найден');
       res.status(200).send({ data: user });
