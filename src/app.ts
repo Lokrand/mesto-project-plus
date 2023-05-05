@@ -1,8 +1,13 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import { Joi, celebrate } from 'celebrate';
+import auth from './middlewares/auth';
+import { createUser, login } from './controllers/user';
 import NotFoundError from './errors/not-found-err';
 import routerUser from './routes/user';
 import routerCard from './routes/card';
+// eslint-disable-next-line import/named
+import { requestLogger, errorLogger } from './middlewares/logger';
 
 require('dotenv').config();
 const { errors } = require('celebrate');
@@ -19,22 +24,37 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(url, {});
 
-// Middleware - для добавления тестового id
-app.use((req: Request, res: Response, next) => {
-  // @ts-expect-error
-  req.user = {
-    _id: '643eed2e20b1ed741ac2582d',
-  };
-  next();
-});
+// Логгер запросов
+app.use(requestLogger);
 
-// роуты
+// Роуты для авторизации
+app.post('/signin', login);
+app.post(
+  '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string(),
+    }),
+  }),
+  createUser,
+);
+
+// Основные роуты для базы данных
+// @ts-expect-error
+app.use('/', auth);
+
 app.use('/users', routerUser);
 app.use('/cards', routerCard);
 
+// Обработчик несуществующей страницы
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError('Страница не найдена'));
 });
+
+// Логгер ошибок
+app.use(errorLogger);
 
 // обработчики ошибок
 app.use(errors());

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Joi, celebrate } from 'celebrate';
 import {
-  createUser,
+  getMe,
   getSingleUser,
   getUsers,
   updateMe,
@@ -19,17 +19,6 @@ router.get(
     }),
   }),
   getSingleUser,
-);
-router.post(
-  '/',
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      about: Joi.string().required().min(2).max(30),
-      avatar: Joi.string().required(),
-    }),
-  }),
-  createUser,
 );
 router.patch(
   '/me',
@@ -50,5 +39,6 @@ router.patch(
   }),
   updateMyAvatar,
 );
+router.get('/me', getMe);
 
 export default router;
