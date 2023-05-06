@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcryptjs';
-// import { IReq } from '../types/req';
 import BadRequest from '../errors/bad-request';
 import AlreadyExist from '../errors/already-exist';
 import WrongData from '../errors/wrong-data';
