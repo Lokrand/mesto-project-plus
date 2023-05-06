@@ -1,6 +1,9 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { Joi, celebrate } from 'celebrate';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import validator from 'validator';
+import BadRequest from './errors/bad-request';
 import auth from './middlewares/auth';
 import { createUser, login } from './controllers/user';
 import NotFoundError from './errors/not-found-err';
@@ -44,7 +47,12 @@ app.post(
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().uri(),
+      avatar: Joi.string().custom((value) => {
+        if (!validator.isURL(value)) {
+          throw new BadRequest('Невалидная ссылка');
+        }
+        return value;
+      }),
       email: Joi.string().required().email(),
       password: Joi.string().required(),
     }),
