@@ -9,6 +9,10 @@ import WrongData from '../errors/wrong-data';
 import User from '../models/user';
 import NotFoundError from '../errors/not-found-err';
 
+require('dotenv').config();
+
+const { JWT_SECRET = 'super-secret-key' } = process.env;
+
 interface SessionRequest extends Request {
   user?: string | JwtPayload;
 }
@@ -102,7 +106,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       if (!user) {
         throw new WrongData('Передан неверный логин или пароль');
       }
-      const token = jwt.sign({ _id: user._id }, 'super-secret-key', {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: '7d',
       });
       res.send({ token });

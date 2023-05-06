@@ -3,6 +3,9 @@ import { NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import WrongData from '../errors/wrong-data';
 
+require('dotenv').config();
+
+const { JWT_SECRET = 'super-secret-key' } = process.env;
 interface SessionRequest extends Request {
   user?: string | JwtPayload;
 }
@@ -27,7 +30,7 @@ export default (req: SessionRequest, res: Response, next: NextFunction) => {
   let payload: jwt.JwtPayload;
 
   try {
-    payload = jwt.verify(token, 'super-secret-key') as jwt.JwtPayload;
+    payload = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
     req.user = { ...payload };
   } catch (err) {
     return next(new WrongData('Необходима авторизация'));
