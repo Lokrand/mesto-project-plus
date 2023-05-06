@@ -4,7 +4,6 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcryptjs';
 // import { IReq } from '../types/req';
-import { IReq } from '../types/req';
 import BadRequest from '../errors/bad-request';
 import AlreadyExist from '../errors/already-exist';
 import WrongData from '../errors/wrong-data';
@@ -111,37 +110,13 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
     })
     .catch(next);
 };
-// const { email, password } = req.body;
 
-// return User.findOne({ email })
-//   .select('+password')
-//   .then((user) => {
-//     if (!user) {
-//       throw new WrongData('Передан неверный логин или пароль');
-//     }
-//     // @ts-expect-error
-//     return bcrypt.compare(password, user.password);
-//   })
-//   .then((matched) => {
-//     if (!matched) {
-//       throw new WrongData('Передан неверный логин или пароль');
-//     }
-
-//     const token = jwt.sign({ _id: matched._id }, 'super-secret-key', {
-//       expiresIn: '7d',
-//     });
-//     res.send({ token });
-//   })
-//   .catch(next);
-
-export const getMe = (req: SessionRequest, res: Response, next: NextFunction) => {
-  const reqWithId = req as IReq;
+export const getMe = (req: SessionRequest, res: Response, next: NextFunction) =>
+  // @ts-expect-error
   // eslint-disable-next-line implicit-arrow-linebreak
-  // eslint-disable-next-line implicit-arrow-linebreak
-  return User.findById({ _id: reqWithId.user._id })
+  User.findById({ _id: req.user?._id })
     .then((user) => {
       if (!user) throw new BadRequest('Пользователь не найден');
       res.status(200).send({ data: user });
     })
     .catch(next);
-};

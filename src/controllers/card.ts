@@ -1,17 +1,25 @@
 import { NextFunction, Request, Response } from 'express';
-import { IReq } from '../types/req';
+import { JwtPayload } from 'jsonwebtoken';
+import NoRights from '../errors/no-rights';
 import Card from '../models/card';
 import NotFoundError from '../errors/not-found-err';
+
+interface SessionRequest extends Request {
+  user?: JwtPayload;
+}
 
 export const getCards = (req: Request, res: Response, next: NextFunction) => Card.find({})
   .then((card) => res.send({ data: card }))
   .catch(next);
 
-export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
+export const deleteCard = (req: SessionRequest, res: Response, next: NextFunction) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена.');
+      }
+      if (String(card.owner) !== req.user?._id) {
+        throw new NoRights('Нет доступа');
       }
       res.status(200).send({ data: card });
     })
@@ -19,9 +27,9 @@ export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const createCard = async (req: Request, res: Response, next: NextFunction) => {
-  const reqWithId = req as IReq;
   const { name, link } = req.body;
-  await Card.create({ owner: reqWithId.user._id, name, link })
+  // @ts-expect-error
+  await Card.create({ owner: req.user._id, name, link })
     .then((card) => res.status(201).send({ data: card }))
     .catch(next);
 };

@@ -11,6 +11,7 @@ import {
 const router = Router();
 
 router.get('/', getUsers);
+router.get('/me', getMe);
 router.get(
   '/:userId',
   celebrate({
@@ -19,6 +20,15 @@ router.get(
     }),
   }),
   getSingleUser,
+);
+router.patch(
+  '/me/avatar',
+  celebrate({
+    body: Joi.object().keys({
+      avatar: Joi.string().required().uri(),
+    }),
+  }),
+  updateMyAvatar,
 );
 router.patch(
   '/me',
@@ -30,15 +40,5 @@ router.patch(
   }),
   updateMe,
 );
-router.patch(
-  '/me/avatar',
-  celebrate({
-    body: Joi.object().keys({
-      avatar: Joi.string().required(),
-    }),
-  }),
-  updateMyAvatar,
-);
-router.get('/me', getMe);
 
 export default router;

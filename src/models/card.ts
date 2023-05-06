@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import validator from 'validator';
 import ICard from '../types/card';
 
 const CardSchema = new mongoose.Schema({
@@ -12,10 +10,6 @@ const CardSchema = new mongoose.Schema({
   },
   link: {
     type: String,
-    validate: [
-      validator.isURL,
-      'Введена не корректная ссылка',
-    ],
     required: true,
   },
   owner: {

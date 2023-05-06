@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { Joi, celebrate } from 'celebrate';
 import auth from './middlewares/auth';
-import { createUser, getMe, login } from './controllers/user';
+import { createUser, login } from './controllers/user';
 import NotFoundError from './errors/not-found-err';
 import routerUser from './routes/user';
 import routerCard from './routes/card';
@@ -32,7 +32,7 @@ app.post(
   '/signin',
   celebrate({
     body: Joi.object().keys({
-      email: Joi.string().required(),
+      email: Joi.string().required().email(),
       password: Joi.string().required(),
     }),
   }),
@@ -44,8 +44,8 @@ app.post(
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string(),
-      email: Joi.string().required(),
+      avatar: Joi.string().uri(),
+      email: Joi.string().required().email(),
       password: Joi.string().required(),
     }),
   }),
@@ -54,7 +54,7 @@ app.post(
 
 // Основные роуты для базы данных
 // @ts-expect-error
-app.use(auth);
+app.use('/', auth);
 
 app.use('/users', routerUser);
 app.use('/cards', routerCard);
@@ -75,8 +75,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const { statusCode = 500, message } = err;
 
   res.status(statusCode).send({
-    // message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
-    message: statusCode === 500 ? err : message,
+    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
   });
 });
 
